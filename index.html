@@ -1,0 +1,80 @@
+<form id="hyperPulseForm">
+    <h2>HyperPulse SIM Registration Portal</h2>
+    
+    <div class="row">
+        <input type="text" id="firstName" placeholder="First Name" required>
+        <input type="text" id="lastName" placeholder="Last Name" required>
+    </div>
+
+    <input type="text" id="companyName" placeholder="Company Name" required>
+    
+    <input type="email" id="companyEmail" placeholder="Company Email" required>
+    <small id="emailError" class="error-msg"></small>
+
+    <div class="row">
+        <select id="country" required>
+            <option value="">Select Country</option>
+            <option value="US">United States (+1)</option>
+            <option value="GB">United Kingdom (+44)</option>
+            </select>
+        <input type="tel" id="contactNumber" placeholder="Mobile Number" required>
+    </div>
+
+    <div class="iccid-container">
+        <input type="text" id="iccid" placeholder="SIM Card ICCID" required>
+        <button type="button" id="scanBtn">📸 Scan Barcode</button>
+    </div>
+    <div id="interactive" class="viewport"></div> <input type="text" id="referredBy" placeholder="Referred By (Optional)">
+
+    <button type="submit" id="submitBtn">Register SIM</button>
+    <div id="statusMessage"></div>
+<script>
+const forbiddenDomains = ['gmail.com', 'msn.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com'];
+
+document.getElementById('hyperPulseForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('companyEmail').value.toLowerCase();
+    const phone = document.getElementById('contactNumber').value;
+    const domain = email.split('@')[1];
+    const status = document.getElementById('statusMessage');
+
+    // 1. Business Email Validation
+    if (forbiddenDomains.includes(domain)) {
+        status.innerText = "Error: Please use a corporate email address.";
+        status.className = "error";
+        return;
+    }
+
+    // 2. Mobile Validation (Basic Regex for digits/length)
+    const phoneRegex = /^\d{7,15}$/;
+    if (!phoneRegex.test(phone)) {
+        status.innerText = "Error: Please enter a valid mobile number.";
+        status.className = "error";
+        return;
+    }
+
+    // Success Simulation
+    status.innerText = "Submission Successful! Your SIM is being processed.";
+    status.className = "success";
+    this.reset();
+});
+
+// 3. Barcode Scanning Implementation
+// Using QuaggaJS logic (requires including the library)
+document.getElementById('scanBtn').addEventListener('click', () => {
+    Quagga.init({
+        inputStream : { name : "Live", type : "LiveStream", target: document.querySelector('#interactive') },
+        decoder : { readers : ["code_128_reader", "ean_reader"] }
+    }, (err) => {
+        if (err) { console.log(err); return; }
+        Quagga.start();
+    });
+
+    Quagga.onDetected((data) => {
+        document.getElementById('iccid').value = data.codeResult.code;
+        Quagga.stop();
+        document.querySelector('#interactive').style.display = 'none';
+    });
+});
+    </script>
+</form>
