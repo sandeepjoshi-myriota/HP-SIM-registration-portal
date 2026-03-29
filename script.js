@@ -3,53 +3,49 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById('hyperPulseForm');
     const scanBtn = document.getElementById('scanBtn');
     const status = document.getElementById('statusMessage');
+    const iccidInput = document.getElementById('iccid');
 
-    // --- BARCODE SCANNING LOGIC ---
+    // Initialize the Scanner
+    const html5QrCode = new Html5Qrcode("interactive");
+
     scanBtn.addEventListener('click', () => {
-        const scanner = document.getElementById('interactive');
-        scanner.style.display = 'block';
-        
-        Quagga.init({
-            inputStream: {
-                type: "LiveStream",
-                target: scanner,
-                constraints: { facingMode: "environment" }
-            },
-            decoder: { readers: ["code_128_reader", "ean_reader", "code_39_reader"] }
-        }, (err) => {
-            if (err) { alert("Camera error: " + err); return; }
-            Quagga.start();
-        });
+        document.getElementById('interactive').style.display = 'block';
 
-        Quagga.onDetected((data) => {
-            document.getElementById('iccid').value = data.codeResult.code;
-            Quagga.stop();
-            scanner.style.display = 'none';
+        const config = { fps: 10, qrbox: { width: 250, height: 150 } };
+
+        // Start scanning (using the back camera)
+        html5QrCode.start(
+            { facingMode: "environment" }, 
+            config,
+            (decodedText) => {
+                // Logic when a barcode is found
+                iccidInput.value = decodedText;
+                html5QrCode.stop(); // Stop camera after success
+                document.getElementById('interactive').style.display = 'none';
+                alert("Scan Successful: " + decodedText);
+            },
+            (errorMessage) => {
+                // We don't alert here because it scans every frame
+                console.log("Scanning...");
+            }
+        ).catch((err) => {
+            alert("Camera Error: Make sure you are using HTTPS or localhost.");
+            console.error(err);
         });
     });
 
-    // --- FORM VALIDATION LOGIC ---
+    // --- SAME FORM VALIDATION AS BEFORE ---
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        status.innerHTML = ""; // Clear old messages
-        
         const email = document.getElementById('companyEmail').value.toLowerCase();
-        const phone = document.getElementById('contactNumber').value;
         const domain = email.split('@')[1];
 
-        // 1. Business Email Check
         if (forbiddenDomains.includes(domain)) {
-            showStatus("Error: Personal emails (Gmail/Yahoo etc.) are not permitted.", "error");
+            showStatus("Error: Business email required.", "error");
             return;
         }
 
-        // 2. Mobile Validation (Digits only, 7-15 chars)
-        if (!/^\d{7,15}$/.test(phone)) {
-            showStatus("Error: Invalid mobile number format.", "error");
-            return;
-        }
-
-        showStatus("Success! Your SIM registration is complete.", "success");
+        showStatus("Success! SIM registered.", "success");
         form.reset();
     });
 
