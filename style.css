@@ -62,7 +62,7 @@ input, select, button {
     border: 1px solid var(--primary);
 }
 
-#interactive video { width: 100%; height: 100%; object-fit: cover; }
+#interactive video { width: 100%; height: auto; object-fit: cover; }
 
 .error { color: #ff4d4d; font-size: 0.85rem; padding: 10px; border-left: 3px solid #ff4d4d; background: #2a1515; }
 .success { color: #00ff88; padding: 10px; background: #152a1d; border-left: 3px solid #00ff88; }
