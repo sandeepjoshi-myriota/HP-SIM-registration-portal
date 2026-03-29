@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HyperPulse SIM Registration</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
     <div class="container">
@@ -36,7 +36,7 @@
                 <button type="button" id="scanBtn">📸 Scan</button>
             </div>
             
-            <div id="interactive" class="viewport"></div>
+            <div id="interactive" style="width: 100%; min-height: 250px;"></div>
 
             <input type="text" id="referredBy" placeholder="Referred By (Optional)">
 
