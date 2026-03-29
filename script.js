@@ -1,38 +1,50 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const forbiddenDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com'];
-    const form = document.getElementById('hyperPulseForm');
     const scanBtn = document.getElementById('scanBtn');
-    const status = document.getElementById('statusMessage');
-    const iccidInput = document.getElementById('iccid');
+    const readerElement = document.getElementById('interactive');
+    
+    // 1. Check if the library loaded
+    if (typeof Html5Qrcode === 'undefined') {
+        alert("Library Error: Html5Qrcode is not loaded. Check your internet or script link.");
+        return;
+    }
 
-    // Initialize the Scanner
     const html5QrCode = new Html5Qrcode("interactive");
 
     scanBtn.addEventListener('click', () => {
-        document.getElementById('interactive').style.display = 'block';
+        console.log("Button clicked. Attempting to start camera...");
+        readerElement.style.display = 'block';
 
-        const config = { fps: 10, qrbox: { width: 250, height: 150 } };
+        const config = { 
+            fps: 10, 
+            qrbox: { width: 250, height: 150 },
+            aspectRatio: 1.0 
+        };
 
-        // Start scanning (using the back camera)
+        // Start scanning
         html5QrCode.start(
-            { facingMode: "environment" }, 
+            { facingMode: "environment" }, // Prioritize back camera
             config,
             (decodedText) => {
-                // Logic when a barcode is found
-                iccidInput.value = decodedText;
-                html5QrCode.stop(); // Stop camera after success
-                document.getElementById('interactive').style.display = 'none';
-                alert("Scan Successful: " + decodedText);
-            },
-            (errorMessage) => {
-                // We don't alert here because it scans every frame
-                console.log("Scanning...");
+                document.getElementById('iccid').value = decodedText;
+                html5QrCode.stop();
+                readerElement.style.display = 'none';
             }
         ).catch((err) => {
-            alert("Camera Error: Make sure you are using HTTPS or localhost.");
-            console.error(err);
+            // THIS WILL TELL US THE TRUTH
+            console.error("Detailed Camera Error:", err);
+            
+            if (err.name === 'NotAllowedError') {
+                alert("PERMISSION DENIED: You must click 'Allow' when the browser asks for camera access.");
+            } else if (err.name === 'NotFoundError') {
+                alert("NO CAMERA: No camera detected on this device.");
+            } else if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+                alert("SECURITY BLOCK: Camera only works on HTTPS or Localhost.");
+            } else {
+                alert("CAMERA ERROR: " + err.message);
+            }
         });
     });
+});
 
     // --- SAME FORM VALIDATION AS BEFORE ---
     form.addEventListener('submit', (e) => {
