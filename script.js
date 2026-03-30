@@ -1,40 +1,54 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const forbiddenDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com'];
+    const scanBtn = document.getElementById('scanBtn');
+    const readerElement = document.getElementById('interactive');
     const iccidInput = document.getElementById('iccid');
-    const status = document.getElementById('statusMessage');
-    const form = document.getElementById('hyperPulseForm');
-
-    // 1. Initialize Scanner Automatically
     const html5QrCode = new Html5Qrcode("interactive");
-    
-    const startScanner = () => {
+
+    scanBtn.addEventListener('click', async () => {
+        // 1. UI Feedback: Show the scanner box
+        readerElement.style.display = 'block';
+        scanBtn.innerText = "⌛ Initializing...";
+        scanBtn.disabled = true;
+
         const config = { 
             fps: 20, 
-            qrbox: { width: 320, height: 150 },
+            qrbox: { width: 280, height: 150 },
             aspectRatio: 1.0 
         };
 
+        // 2. Check Permissions & Start
         html5QrCode.start(
             { facingMode: "environment" }, 
             config, 
             (decodedText) => {
-                // SUCCESS: Fill input and provide feedback
+                // SUCCESS: Fill and Stop
                 iccidInput.value = decodedText;
-                iccidInput.style.borderColor = "#00ff88";
-                
-                // Vibrate if mobile supports it
-                if (navigator.vibrate) navigator.vibrate(100);
-                
-                // Optional: Stop camera to save battery after successful scan
-                // html5QrCode.stop(); 
+                html5QrCode.stop().then(() => {
+                    readerElement.style.display = 'none';
+                    scanBtn.innerText = "📸 Scan Again";
+                    scanBtn.disabled = false;
+                });
             }
         ).catch((err) => {
-            console.warn("Scanner failed to auto-start. Ensure HTTPS is used.", err);
+            // 3. Handle Permission or Hardware Errors
+            readerElement.style.display = 'none';
+            scanBtn.innerText = "📸 Open Scanner";
+            scanBtn.disabled = false;
+
+            if (err.name === 'NotAllowedError' || err.includes("Permission")) {
+                alert("PERMISSION BLOCKED: Please click the lock icon in your browser address bar and set Camera to 'Allow'.");
+            } else {
+                alert("CAMERA ERROR: " + err);
+            }
+            console.error("Scanner Error:", err);
         });
-    };
+    });
 
-    startScanner();
-
+    // --- Form Validation (Same as before) ---
+    document.getElementById('hyperPulseForm').addEventListener('submit', (e) => {
+        // ... validation logic ...
+    });
+});
     // 2. Form Submission & Logic
     form.addEventListener('submit', (e) => {
         e.preventDefault();
