@@ -2,13 +2,11 @@
     --cyan: #00f2ff;
     --dark-bg: #0a0a12;
     --card-bg: #161625;
-    --error: #ff4d4d;
-    --success: #00ff88;
 }
 
 body {
     background-color: var(--dark-bg);
-    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     color: white;
     display: flex;
     justify-content: center;
@@ -26,8 +24,8 @@ body {
     border: 1px solid #2d2d3f;
 }
 
-h1 { color: var(--cyan); margin: 0; text-transform: uppercase; letter-spacing: 4px; font-size: 1.8rem; }
-.tagline { color: #888; margin-bottom: 2rem; font-size: 0.85rem; letter-spacing: 1px; }
+h1 { color: var(--cyan); margin: 0; text-transform: uppercase; letter-spacing: 4px; }
+.tagline { color: #888; margin-bottom: 2rem; font-size: 0.85rem; }
 
 input, select, button {
     width: 100%;
@@ -38,87 +36,46 @@ input, select, button {
     color: white;
     border-radius: 8px;
     box-sizing: border-box;
-    font-size: 0.95rem;
 }
 
-input:focus { border-color: var(--cyan); outline: none; }
 .row { display: flex; gap: 12px; }
 
-/* SCANNER STYLES */
-.scanner-section { margin: 15px 0; }
-.scanner-section label { display: block; margin-bottom: 10px; color: var(--cyan); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
-.scan-controls {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-#scanBtn {
-    width: auto;
-    white-space: nowrap;
-    background: #333;
-    border: 1px solid var(--cyan);
-    color: var(--cyan);
-    cursor: pointer;
-    font-size: 0.85rem;
-    padding: 0 20px;
-}
-
-#scanBtn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
+/* SCANNER UI */
+.scanner-section label { display: block; margin-bottom: 8px; color: var(--cyan); font-size: 0.8rem; font-weight: bold; }
 
 #interactive {
     width: 100%;
     height: 250px;
-    display: none; /* Hidden by default */
     background: #000;
-    border: 2px solid var(--cyan);
     border-radius: 12px;
-    overflow: hidden;
     margin-bottom: 10px;
+    display: none; /* Hidden until button click */
+    border: 2px solid var(--cyan);
+    overflow: hidden;
 }
 
-/* The Animated Scanning Line */
-#interactive::after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 3px;
-    background: var(--cyan);
-    box-shadow: 0 0 15px var(--cyan);
-    top: 0;
-    left: 0;
-    animation: scanMove 2.5s infinite ease-in-out;
-    z-index: 10;
-}
+.scan-controls { display: flex; gap: 10px; }
+#iccid { flex-grow: 1; font-family: monospace; letter-spacing: 1px; }
 
-@keyframes scanMove {
-    0%, 100% { top: 5%; opacity: 0.3; }
-    50% { top: 90%; opacity: 1; }
-}
-
-#iccid {
-    border: 2px solid #2d2d3f;
-    text-align: center;
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    letter-spacing: 2px;
+#scanBtn {
+    width: auto;
+    background: #333;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    cursor: pointer;
+    white-space: nowrap;
+    padding: 0 15px;
 }
 
 #submitBtn {
     background: var(--cyan);
     color: #000;
-    font-weight: 800;
-    text-transform: uppercase;
+    font-weight: bold;
     border: none;
     cursor: pointer;
-    margin-top: 15px;
-    transition: 0.3s;
+    margin-top: 10px;
+    text-transform: uppercase;
 }
 
-#submitBtn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 242, 255, 0.4); }
-
-.error { color: var(--error); background: rgba(255, 77, 77, 0.1); padding: 12px; border-radius: 6px; border-left: 4px solid var(--error); margin-top: 15px; }
-.success { color: var(--success); background: rgba(0, 255, 136, 0.1); padding: 12px; border-radius: 6px; border-left: 4px solid var(--success); margin-top: 15px; }
+.error { color: #ff4d4d; background: rgba(255, 77, 77, 0.1); padding: 10px; border-radius: 6px; margin-top: 10px; }
+.success { color: #00ff88; background: rgba(0, 255, 136, 0.1); padding: 10px; border-radius: 6px; margin-top: 10px; }
