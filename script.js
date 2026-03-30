@@ -1,59 +1,72 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const iccidInput = document.getElementById('iccid');
+    const forbiddenDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com'];
+    const form = document.getElementById('hyperPulseForm');
     const scanBtn = document.getElementById('scanBtn');
+    const iccidInput = document.getElementById('iccid');
+    const status = document.getElementById('statusMessage');
     const readerElement = document.getElementById('interactive');
 
-    // Initialize the Scanner object
+    // 1. Scanner Initialization
     const html5QrCode = new Html5Qrcode("interactive");
 
     scanBtn.addEventListener('click', () => {
-        readerElement.style.display = 'block'; // Show the camera container
+        // Show camera container
+        readerElement.style.display = 'block';
 
         const config = { 
-            fps: 20, // High frame rate for faster barcode "catching"
-            qrbox: { width: 300, height: 150 }, // Box shaped for long barcodes
-            aspectRatio: 1.0
+            fps: 20, 
+            qrbox: { width: 300, height: 150 },
+            aspectRatio: 1.0 
         };
 
+        // Start Camera
         html5QrCode.start(
             { facingMode: "environment" }, 
-            config,
+            config, 
             (decodedText) => {
-                // --- THE MAGIC HAPPENS HERE ---
-                // 1. Fill the input field with the scanned code
+                // SUCCESS: Populate ICCID
                 iccidInput.value = decodedText;
                 
-                // 2. Add a visual "Success" flash to the input
-                iccidInput.style.backgroundColor = "#152a1d";
-                iccidInput.style.borderColor = "#00ff88";
-
-                // 3. Stop the camera to save battery/processing
+                // Stop camera and hide reader
                 html5QrCode.stop().then(() => {
-                    readerElement.style.display = 'none'; // Hide camera
-                    console.log("Scan successful, ICCID populated.");
+                    readerElement.style.display = 'none';
                 });
             },
-            (errorMessage) => {
-                // Silently ignore failed frames to keep the UI smooth
-            }
+            (errorMessage) => { /* Ignore constant scan failures */ }
         ).catch((err) => {
-            alert("Camera failed: " + err);
+            alert("Camera failed: Ensure you are on HTTPS or localhost. Error: " + err);
         });
     });
-});
 
-    // 6. Form Submission Validation
+    // 2. Form Submission & Validation
     form.addEventListener('submit', (e) => {
         e.preventDefault();
+        status.innerHTML = ""; // Clear old messages
+
         const email = document.getElementById('companyEmail').value.toLowerCase();
+        const phone = document.getElementById('contactNumber').value;
         const domain = email.split('@')[1];
 
+        // Business Email Check
         if (forbiddenDomains.includes(domain)) {
-            alert("Error: Please use a corporate email address.");
+            showStatus("Error: Personal email providers are not allowed.", "error");
             return;
         }
 
-        alert("HyperPulse SIM Registration Submitted Successfully!");
+        // Mobile Validation (Digits only, 7-15 chars)
+        if (!/^\d{7,15}$/.test(phone)) {
+            showStatus("Error: Please enter a valid mobile number (digits only).", "error");
+            return;
+        }
+
+        // Success
+        showStatus("Registration Successful! Processing SIM activation...", "success");
         form.reset();
+        readerElement.style.display = 'none';
     });
+
+    function showStatus(msg, type) {
+        status.innerText = msg;
+        status.className = type;
+    }
 });
