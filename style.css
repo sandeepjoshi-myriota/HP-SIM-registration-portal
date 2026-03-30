@@ -2,6 +2,7 @@
     --cyan: #00f2ff;
     --dark-bg: #0a0a12;
     --card-bg: #161625;
+    --success: #00ff88;
 }
 
 body {
@@ -40,42 +41,77 @@ input, select, button {
 
 .row { display: flex; gap: 12px; }
 
-/* SCANNER UI */
+/* SCANNER CONTAINER */
 .scanner-section label { display: block; margin-bottom: 8px; color: var(--cyan); font-size: 0.8rem; font-weight: bold; }
 
-#interactive {
+#scanner-wrapper {
+    position: relative;
     width: 100%;
-    height: 250px;
+    height: 220px;
     background: #000;
     border-radius: 12px;
-    margin-bottom: 10px;
-    display: none; /* Hidden until button click */
-    border: 2px solid var(--cyan);
+    margin-bottom: 15px;
+    display: none; /* Only show when scanning */
+    border: 2px solid #2d2d3f;
     overflow: hidden;
 }
 
-.scan-controls { display: flex; gap: 10px; }
-#iccid { flex-grow: 1; font-family: monospace; letter-spacing: 1px; }
+#interactive { width: 100%; height: 100%; }
 
-#scanBtn {
-    width: auto;
-    background: #333;
-    border: 1px solid var(--cyan);
-    color: var(--cyan);
-    cursor: pointer;
-    white-space: nowrap;
-    padding: 0 15px;
-}
-
-#submitBtn {
-    background: var(--cyan);
-    color: #000;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    margin-top: 10px;
+/* INSTRUCTIONS & FOCUS FRAME */
+#scanner-instructions {
+    position: absolute;
+    top: 15px;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: 0.75rem;
+    z-index: 10;
     text-transform: uppercase;
+    letter-spacing: 1px;
+    pointer-events: none;
+    animation: pulse 2s infinite;
 }
+
+.focus-frame {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 260px; height: 100px;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.corner { position: absolute; width: 15px; height: 15px; border: 3px solid var(--cyan); }
+.top-left { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+.top-right { top: 0; right: 0; border-left: 0; border-bottom: 0; }
+.bottom-left { bottom: 0; left: 0; border-right: 0; border-top: 0; }
+.bottom-right { bottom: 0; right: 0; border-left: 0; border-top: 0; }
+
+.scan-line {
+    position: absolute; width: 100%; height: 2px;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
+    top: 0; animation: moveLine 2s infinite linear;
+}
+
+@keyframes moveLine { 0% { top: 0%; } 100% { top: 100%; } }
+@keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+/* VISUAL FEEDBACK */
+.flash-success { animation: flash 0.6s ease-out; }
+@keyframes flash {
+    0% { background: #000; }
+    50% { background: var(--success); }
+    100% { background: #000; }
+}
+
+#iccid.success-fill { border-color: var(--success); background: #0a1a11; }
+
+/* CONTROLS */
+.scan-controls { display: flex; gap: 10px; }
+#scanBtn { width: auto; white-space: nowrap; padding: 0 15px; background: #333; border: 1px solid var(--cyan); color: var(--cyan); cursor: pointer; }
+#submitBtn { background: var(--cyan); color: #000; font-weight: bold; border: none; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
 
 .error { color: #ff4d4d; background: rgba(255, 77, 77, 0.1); padding: 10px; border-radius: 6px; margin-top: 10px; }
-.success { color: #00ff88; background: rgba(0, 255, 136, 0.1); padding: 10px; border-radius: 6px; margin-top: 10px; }
+.success { color: var(--success); background: rgba(0, 255, 136, 0.1); padding: 10px; border-radius: 6px; margin-top: 10px; }
