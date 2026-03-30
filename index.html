@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HyperPulse SIM Registration Portal</title>
+    <title>HyperPulse SIM Registration</title>
     <link rel="stylesheet" href="style.css">
-   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
 
     <div class="portal-card">
-        <h1>HyperPulse</h1>
-        <p class="tagline">SIM Registration Portal</p>
+        <header>
+            <h1>HyperPulse</h1>
+            <p class="tagline">SIM Registration Portal</p>
+        </header>
 
         <form id="hyperPulseForm">
             <div class="row">
@@ -20,31 +22,27 @@
             </div>
 
             <input type="text" id="companyName" placeholder="Company Name" required>
-            
-            <input type="email" id="companyEmail" placeholder="Company Email (Business only)" required>
+            <input type="email" id="companyEmail" placeholder="Business Email" required>
 
             <div class="row">
                 <select id="country" required>
                     <option value="">Country</option>
                     <option value="1">USA (+1)</option>
                     <option value="44">UK (+44)</option>
-                    <option value="61">AUS (+61)</option>
-                    <option value="55">BRAZIL (+61)</option>
                 </select>
                 <input type="tel" id="contactNumber" placeholder="Mobile Number" required>
             </div>
 
-            <label>SIM Card ICCID</label>
-            <div class="scan-container">
-                <input type="text" id="iccid" placeholder="Enter manually or scan" required>
-                <button type="button" id="scanBtn">📸 Scan</button>
+            <div class="scanner-section">
+                <label>Scan SIM Barcode</label>
+                <div id="interactive"></div>
+                
+                <input type="text" id="iccid" placeholder="Waiting for scan or enter manually..." required>
             </div>
-
-            <div id="interactive"></div>
 
             <input type="text" id="referredBy" placeholder="Referred By (Optional)">
 
-            <button type="submit" id="submitBtn">Register SIM</button>
+            <button type="submit" id="submitBtn">Complete Registration</button>
             
             <div id="statusMessage"></div>
         </form>
