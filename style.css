@@ -63,6 +63,23 @@ input, select, button {
 }
 
 #interactive video { width: 100%; height: auto; object-fit: cover; }
+/* Add a transition effect to the ICCID field */
+#iccid {
+    transition: all 0.5s ease;
+    font-family: 'Courier New', monospace; /* Monospace is better for long ID numbers */
+    letter-spacing: 1px;
+}
+
+/* Optional: Scanning "Success" animation */
+.scan-success-flash {
+    animation: flashGreen 0.8s;
+}
+
+@keyframes flashGreen {
+    0% { box-shadow: 0 0 0px #00ff88; }
+    50% { box-shadow: 0 0 20px #00ff88; }
+    100% { box-shadow: 0 0 0px #00ff88; }
+}
 
 .error { color: #ff4d4d; font-size: 0.85rem; padding: 10px; border-left: 3px solid #ff4d4d; background: #2a1515; }
 .success { color: #00ff88; padding: 10px; background: #152a1d; border-left: 3px solid #00ff88; }
