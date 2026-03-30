@@ -1,42 +1,32 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const forbiddenDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com'];
-    const form = document.getElementById('hyperPulseForm');
-    const scanBtn = document.getElementById('scanBtn');
-    const iccidInput = document.getElementById('iccid');
-    const status = document.getElementById('statusMessage');
-    const readerElement = document.getElementById('interactive');
+const scanBtn = document.getElementById('scanBtn');
+const html5QrCode = new Html5Qrcode("interactive");
 
-    // 1. Scanner Initialization
-    const html5QrCode = new Html5Qrcode("interactive");
+scanBtn.addEventListener('click', () => {
+    // 1. Show the element FIRST
+    document.getElementById('interactive').style.display = 'block';
 
-    scanBtn.addEventListener('click', () => {
-        // Show camera container
-        readerElement.style.display = 'block';
+    // 2. Define mobile-optimized constraints
+    const config = { 
+        fps: 15, 
+        qrbox: { width: 250, height: 150 },
+        aspectRatio: 1.0
+    };
 
-        const config = { 
-            fps: 20, 
-            qrbox: { width: 300, height: 150 },
-            aspectRatio: 1.0 
-        };
-
-        // Start Camera
-        html5QrCode.start(
-            { facingMode: "environment" }, 
-            config, 
-            (decodedText) => {
-                // SUCCESS: Populate ICCID
-                iccidInput.value = decodedText;
-                
-                // Stop camera and hide reader
-                html5QrCode.stop().then(() => {
-                    readerElement.style.display = 'none';
-                });
-            },
-            (errorMessage) => { /* Ignore constant scan failures */ }
-        ).catch((err) => {
-            alert("Camera failed: Ensure you are on HTTPS or localhost. Error: " + err);
-        });
+    // 3. Request permissions explicitly
+    html5QrCode.start(
+        { facingMode: "environment" }, // Forces the BACK camera
+        config,
+        (decodedText) => {
+            document.getElementById('iccid').value = decodedText;
+            html5QrCode.stop();
+            document.getElementById('interactive').style.display = 'none';
+        }
+    ).catch((err) => {
+        // This will trigger on mobile if not using HTTPS
+        console.error("Mobile Camera Error:", err);
+        alert("Mobile Error: " + err); 
     });
+}, { passive: true }); // Adding passive listener for mobile performance
 
     // 2. Form Submission & Validation
     form.addEventListener('submit', (e) => {
