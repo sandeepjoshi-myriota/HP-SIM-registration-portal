@@ -34,8 +34,12 @@
             </div>
 
             <div class="scanner-section">
-                <label>Scan SIM Barcode</label>
-                <div id="interactive"></div>
+                <label>SIM Card ICCID</label>
+                <div id="interactive"></div> <div class="scan-controls">
+                    <input type="text" id="iccid" placeholder="Scan or enter ICCID" required>
+                    <button type="button" id="scanBtn">📸 Open Scanner</button>
+                </div>
+            </div>
                 
                 <input type="text" id="iccid" placeholder="Waiting for scan or enter manually..." required>
             </div>
