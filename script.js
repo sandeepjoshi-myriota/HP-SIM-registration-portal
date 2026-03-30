@@ -1,58 +1,62 @@
-const scanBtn = document.getElementById('scanBtn');
-const html5QrCode = new Html5Qrcode("interactive");
+document.addEventListener("DOMContentLoaded", () => {
+    const forbiddenDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com'];
+    const iccidInput = document.getElementById('iccid');
+    const status = document.getElementById('statusMessage');
+    const form = document.getElementById('hyperPulseForm');
 
-scanBtn.addEventListener('click', () => {
-    // 1. Show the element FIRST
-    document.getElementById('interactive').style.display = 'block';
+    // 1. Initialize Scanner Automatically
+    const html5QrCode = new Html5Qrcode("interactive");
+    
+    const startScanner = () => {
+        const config = { 
+            fps: 20, 
+            qrbox: { width: 320, height: 150 },
+            aspectRatio: 1.0 
+        };
 
-    // 2. Define mobile-optimized constraints
-    const config = { 
-        fps: 15, 
-        qrbox: { width: 250, height: 150 },
-        aspectRatio: 1.0
+        html5QrCode.start(
+            { facingMode: "environment" }, 
+            config, 
+            (decodedText) => {
+                // SUCCESS: Fill input and provide feedback
+                iccidInput.value = decodedText;
+                iccidInput.style.borderColor = "#00ff88";
+                
+                // Vibrate if mobile supports it
+                if (navigator.vibrate) navigator.vibrate(100);
+                
+                // Optional: Stop camera to save battery after successful scan
+                // html5QrCode.stop(); 
+            }
+        ).catch((err) => {
+            console.warn("Scanner failed to auto-start. Ensure HTTPS is used.", err);
+        });
     };
 
-    // 3. Request permissions explicitly
-    html5QrCode.start(
-        { facingMode: "environment" }, // Forces the BACK camera
-        config,
-        (decodedText) => {
-            document.getElementById('iccid').value = decodedText;
-            html5QrCode.stop();
-            document.getElementById('interactive').style.display = 'none';
-        }
-    ).catch((err) => {
-        // This will trigger on mobile if not using HTTPS
-        console.error("Mobile Camera Error:", err);
-        alert("Mobile Error: " + err); 
-    });
-}, { passive: true }); // Adding passive listener for mobile performance
+    startScanner();
 
-    // 2. Form Submission & Validation
+    // 2. Form Submission & Logic
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        status.innerHTML = ""; // Clear old messages
+        status.innerHTML = ""; 
 
         const email = document.getElementById('companyEmail').value.toLowerCase();
         const phone = document.getElementById('contactNumber').value;
         const domain = email.split('@')[1];
 
-        // Business Email Check
         if (forbiddenDomains.includes(domain)) {
-            showStatus("Error: Personal email providers are not allowed.", "error");
+            showStatus("❌ Corporate email required (No Gmail/Yahoo).", "error");
             return;
         }
 
-        // Mobile Validation (Digits only, 7-15 chars)
         if (!/^\d{7,15}$/.test(phone)) {
-            showStatus("Error: Please enter a valid mobile number (digits only).", "error");
+            showStatus("❌ Invalid mobile number format.", "error");
             return;
         }
 
-        // Success
-        showStatus("Registration Successful! Processing SIM activation...", "success");
+        showStatus("✅ Registration complete! Your HyperPulse SIM is active.", "success");
         form.reset();
-        readerElement.style.display = 'none';
+        iccidInput.style.borderColor = "#333";
     });
 
     function showStatus(msg, type) {
