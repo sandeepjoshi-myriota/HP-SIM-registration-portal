@@ -1,68 +1,76 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // 1. Setup constants for validation
+    const forbiddenDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com'];
+    const form = document.getElementById('hyperPulseForm');
     const scanBtn = document.getElementById('scanBtn');
+    const iccidInput = document.getElementById('iccid');
     const readerElement = document.getElementById('interactive');
-    
-    // 1. Check if the library loaded
-    if (typeof Html5Qrcode === 'undefined') {
-        alert("Library Error: Html5Qrcode is not loaded. Check your internet or script link.");
-        return;
-    }
 
+    // 2. Initialize the Scanner Instance
     const html5QrCode = new Html5Qrcode("interactive");
 
+    // 3. Define the Success Callback Function
+    const onScanSuccess = (decodedText, decodedResult) => {
+        console.log(`Scan result: ${decodedText}`, decodedResult);
+        
+        // Populate the ICCID field
+        iccidInput.value = decodedText;
+        
+        // Visual feedback for the user
+        iccidInput.style.border = "2px solid #00f2ff";
+        iccidInput.classList.add('scan-success-flash');
+
+        // Stop scanning and hide camera
+        html5QrCode.stop().then(() => {
+            readerElement.style.display = 'none';
+            alert("ICCID Captured: " + decodedText);
+        }).catch((err) => {
+            console.warn("Stop failed", err);
+        });
+    };
+
+    // 4. Define the Error Callback (Optional - fires on every frame that fails)
+    const onScanFailure = (error) => {
+        // We leave this empty to avoid spamming the console
+    };
+
+    // 5. Button Click Event
     scanBtn.addEventListener('click', () => {
-        console.log("Button clicked. Attempting to start camera...");
         readerElement.style.display = 'block';
 
         const config = { 
-            fps: 10, 
-            qrbox: { width: 250, height: 150 },
+            fps: 20, 
+            qrbox: { width: 300, height: 150 },
             aspectRatio: 1.0 
         };
 
-        // Start scanning
+        // Start the camera
+        // Argument 1: Camera Config
+        // Argument 2: App Config
+        // Argument 3: THE SUCCESS CALLBACK (onScanSuccess)
+        // Argument 4: THE ERROR CALLBACK (onScanFailure)
         html5QrCode.start(
-            { facingMode: "environment" }, // Prioritize back camera
-            config,
-            (decodedText) => {
-                document.getElementById('iccid').value = decodedText;
-                html5QrCode.stop();
-                readerElement.style.display = 'none';
-            }
+            { facingMode: "environment" }, 
+            config, 
+            onScanSuccess, 
+            onScanFailure
         ).catch((err) => {
-            // THIS WILL TELL US THE TRUTH
-            console.error("Detailed Camera Error:", err);
-            
-            if (err.name === 'NotAllowedError') {
-                alert("PERMISSION DENIED: You must click 'Allow' when the browser asks for camera access.");
-            } else if (err.name === 'NotFoundError') {
-                alert("NO CAMERA: No camera detected on this device.");
-            } else if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-                alert("SECURITY BLOCK: Camera only works on HTTPS or Localhost.");
-            } else {
-                alert("CAMERA ERROR: " + err.message);
-            }
+            alert("Camera initialization failed. Ensure you are on HTTPS.");
         });
     });
-});
 
-    // --- SAME FORM VALIDATION AS BEFORE ---
+    // 6. Form Submission Validation
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('companyEmail').value.toLowerCase();
         const domain = email.split('@')[1];
 
         if (forbiddenDomains.includes(domain)) {
-            showStatus("Error: Business email required.", "error");
+            alert("Error: Please use a corporate email address.");
             return;
         }
 
-        showStatus("Success! SIM registered.", "success");
+        alert("HyperPulse SIM Registration Submitted Successfully!");
         form.reset();
     });
-
-    function showStatus(msg, type) {
-        status.innerText = msg;
-        status.className = type;
-    }
 });
