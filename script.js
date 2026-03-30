@@ -1,63 +1,46 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Setup constants for validation
-    const forbiddenDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com'];
-    const form = document.getElementById('hyperPulseForm');
-    const scanBtn = document.getElementById('scanBtn');
     const iccidInput = document.getElementById('iccid');
+    const scanBtn = document.getElementById('scanBtn');
     const readerElement = document.getElementById('interactive');
 
-    // 2. Initialize the Scanner Instance
+    // Initialize the Scanner object
     const html5QrCode = new Html5Qrcode("interactive");
 
-    // 3. Define the Success Callback Function
-    const onScanSuccess = (decodedText, decodedResult) => {
-        console.log(`Scan result: ${decodedText}`, decodedResult);
-        
-        // Populate the ICCID field
-        iccidInput.value = decodedText;
-        
-        // Visual feedback for the user
-        iccidInput.style.border = "2px solid #00f2ff";
-        iccidInput.classList.add('scan-success-flash');
-
-        // Stop scanning and hide camera
-        html5QrCode.stop().then(() => {
-            readerElement.style.display = 'none';
-            alert("ICCID Captured: " + decodedText);
-        }).catch((err) => {
-            console.warn("Stop failed", err);
-        });
-    };
-
-    // 4. Define the Error Callback (Optional - fires on every frame that fails)
-    const onScanFailure = (error) => {
-        // We leave this empty to avoid spamming the console
-    };
-
-    // 5. Button Click Event
     scanBtn.addEventListener('click', () => {
-        readerElement.style.display = 'block';
+        readerElement.style.display = 'block'; // Show the camera container
 
         const config = { 
-            fps: 20, 
-            qrbox: { width: 300, height: 150 },
-            aspectRatio: 1.0 
+            fps: 20, // High frame rate for faster barcode "catching"
+            qrbox: { width: 300, height: 150 }, // Box shaped for long barcodes
+            aspectRatio: 1.0
         };
 
-        // Start the camera
-        // Argument 1: Camera Config
-        // Argument 2: App Config
-        // Argument 3: THE SUCCESS CALLBACK (onScanSuccess)
-        // Argument 4: THE ERROR CALLBACK (onScanFailure)
         html5QrCode.start(
             { facingMode: "environment" }, 
-            config, 
-            onScanSuccess, 
-            onScanFailure
+            config,
+            (decodedText) => {
+                // --- THE MAGIC HAPPENS HERE ---
+                // 1. Fill the input field with the scanned code
+                iccidInput.value = decodedText;
+                
+                // 2. Add a visual "Success" flash to the input
+                iccidInput.style.backgroundColor = "#152a1d";
+                iccidInput.style.borderColor = "#00ff88";
+
+                // 3. Stop the camera to save battery/processing
+                html5QrCode.stop().then(() => {
+                    readerElement.style.display = 'none'; // Hide camera
+                    console.log("Scan successful, ICCID populated.");
+                });
+            },
+            (errorMessage) => {
+                // Silently ignore failed frames to keep the UI smooth
+            }
         ).catch((err) => {
-            alert("Camera initialization failed. Ensure you are on HTTPS.");
+            alert("Camera failed: " + err);
         });
     });
+});
 
     // 6. Form Submission Validation
     form.addEventListener('submit', (e) => {
