@@ -47,16 +47,37 @@ input:focus { border-color: var(--cyan); outline: none; }
 /* SCANNER STYLES */
 .scanner-section { margin: 15px 0; }
 .scanner-section label { display: block; margin-bottom: 10px; color: var(--cyan); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
+.scan-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+#scanBtn {
+    width: auto;
+    white-space: nowrap;
+    background: #333;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0 20px;
+}
+
+#scanBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 
 #interactive {
     width: 100%;
-    height: 220px;
+    height: 250px;
+    display: none; /* Hidden by default */
     background: #000;
+    border: 2px solid var(--cyan);
     border-radius: 12px;
-    margin-bottom: 15px;
-    border: 2px solid #2d2d3f;
     overflow: hidden;
-    position: relative;
+    margin-bottom: 10px;
 }
 
 /* The Animated Scanning Line */
