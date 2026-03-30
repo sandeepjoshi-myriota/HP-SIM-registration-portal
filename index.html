@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HyperPulse SIM Registration</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
 
@@ -29,19 +29,20 @@
                     <option value="">Country</option>
                     <option value="1">USA (+1)</option>
                     <option value="44">UK (+44)</option>
+                    <option value="61">AUS (+61)</option>
                 </select>
                 <input type="tel" id="contactNumber" placeholder="Mobile Number" required>
             </div>
 
             <div class="scanner-section">
                 <label>SIM Card ICCID</label>
-                <div id="interactive"></div> <div class="scan-controls">
+                <div id="interactive"></div>
+                
+                <div class="scan-controls">
                     <input type="text" id="iccid" placeholder="Scan or enter ICCID" required>
                     <button type="button" id="scanBtn">📸 Open Scanner</button>
                 </div>
-            </div>
-                
-                <input type="text" id="iccid" placeholder="Waiting for scan or enter manually..." required>
+                <small id="cameraAdvice" style="display:none; color: #888;">💡 Tip: Hold the SIM 10 inches away for focus.</small>
             </div>
 
             <input type="text" id="referredBy" placeholder="Referred By (Optional)">
