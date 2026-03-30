@@ -36,23 +36,13 @@
 
             <div class="scanner-section">
                 <label>SIM Card ICCID</label>
-                
-                <div id="scanner-wrapper">
-                    <div id="scanner-instructions">Scan the bar code on your SIM card</div>
-                    <div id="interactive"></div>
-                    <div class="focus-frame">
-                        <div class="corner top-left"></div>
-                        <div class="corner top-right"></div>
-                        <div class="corner bottom-left"></div>
-                        <div class="corner bottom-right"></div>
-                        <div class="scan-line"></div>
-                    </div>
-                </div>
+                <div id="interactive"></div>
                 
                 <div class="scan-controls">
                     <input type="text" id="iccid" placeholder="Scan or enter ICCID" required>
                     <button type="button" id="scanBtn">📸 Open Scanner</button>
                 </div>
+                <small id="cameraAdvice" style="display:none; color: #888;">💡 Tip: Hold the SIM 10 inches away for focus.</small>
             </div>
 
             <input type="text" id="referredBy" placeholder="Referred By (Optional)">
